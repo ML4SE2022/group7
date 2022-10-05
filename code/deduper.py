@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import sys
 
 
 class BColors:
@@ -70,6 +71,16 @@ class DupesRemover:
         self.print_data_to_file(unique_entries, file_destination)
 
 
-dupes_remover = DupesRemover()
-# json_data = dupes_remover.remove_dupes("./test_webquery.json", "./test_webquery_unique.json")
-dupes_remover.remove_dupes("./train_codesearchnet_7.json", "./train_codesearchnet_7_unique.json")
+def main(input_name):
+    input_name_filtered = input_name[:-5]
+    extension = '.json'
+    dupes_remover = DupesRemover()
+    dupes_remover.remove_dupes(input_name_filtered + extension,
+                               input_name_filtered + "_unique" + extension)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        print("Usage: python " + sys.argv[0] + " [input file]")
+    else:
+        main(sys.argv[1])
