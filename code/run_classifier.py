@@ -44,6 +44,7 @@ import multiprocessing
 cpu_cont = multiprocessing.cpu_count()
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 MODEL_CLASSES = {'roberta': (RobertaConfig, RobertaModel, RobertaTokenizer)}
 
