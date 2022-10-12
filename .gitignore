@@ -1,5 +1,16 @@
+data/python
+data/python.zip
+data/*.pkl
+
+model_codesearchnet
+
 # data files
 *.json
+!data/cosqa_train_short.json
+!data/cosqa_dev_short.json
+
+### Taskfile ###
+.task
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

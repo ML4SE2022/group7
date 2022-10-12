@@ -1,0 +1,48 @@
+version: 3
+
+tasks:
+  run-classifier:
+    deps: [":venv:create"]
+    cmds:
+      - >
+        {{.VENV_PYTHON}} code/run_classifier.py
+        --model_type roberta
+        --do_train
+        --do_eval
+        --eval_all_checkpoints
+        --train_file train_codesearchnet_7.json
+        --dev_file dev_codesearchnet.json
+        --max_seq_length 200
+        --per_gpu_train_batch_size 16
+        --per_gpu_eval_batch_size 16
+        --learning_rate 1e-5
+        --num_train_epochs 3
+        --gradient_accumulation_steps 1
+        --warmup_steps 1000
+        --evaluate_during_training
+        --data_dir ./data/
+        --output_dir ./model_codesearchnet
+        --encoder_name_or_path microsoft/codebert-base
+  dev-run-classifier:
+    deps: [":venv:create"]
+    cmds:
+      - >
+        {{.VENV_PYTHON}} code/run_classifier.py
+        --model_type roberta
+        --do_train
+        --do_eval
+        --eval_all_checkpoints
+        --train_file train_codesearchnet_7_short.json
+        --dev_file dev_codesearchnet_short.json
+        --max_seq_length 200
+        --per_gpu_train_batch_size 4
+        --per_gpu_eval_batch_size 4
+        --learning_rate 0.1
+        --num_train_epochs 1
+        --max_steps 100
+        --save_steps 99
+        --gradient_accumulation_steps 1
+        --warmup_steps 10
+        --data_dir ./data/
+        --output_dir ./model_codesearchnet
+        --encoder_name_or_path microsoft/codebert-base
