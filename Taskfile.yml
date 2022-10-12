@@ -22,4 +22,5 @@ tasks:
   venv:clean: "rm -r {{.VENV}}"
   clean:
     deps:
+      - "code:clean"
       - "data:clean"

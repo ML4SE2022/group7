@@ -1,6 +1,10 @@
 version: 3
 
+vars:
+  OUTPUT_DIR: "model_codesearchnet"
+
 tasks:
+  clean: "rm -r {{.OUTPUT_DIR}}"
   run-classifier:
     deps: [":venv:create"]
     cmds:
@@ -21,7 +25,7 @@ tasks:
         --warmup_steps 1000
         --evaluate_during_training
         --data_dir ./data/
-        --output_dir ./model_codesearchnet
+        --output_dir {{.OUTPUT_DIR}}
         --encoder_name_or_path microsoft/codebert-base
   dev-run-classifier:
     deps: [":venv:create"]
@@ -44,5 +48,5 @@ tasks:
         --gradient_accumulation_steps 1
         --warmup_steps 10
         --data_dir ./data/
-        --output_dir ./model_codesearchnet
+        --output_dir {{.OUTPUT_DIR}}
         --encoder_name_or_path microsoft/codebert-base
