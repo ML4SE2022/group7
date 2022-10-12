@@ -32,8 +32,8 @@ tasks:
         --do_train
         --do_eval
         --eval_all_checkpoints
-        --train_file dev_codesearchnet.json
-        --dev_file dev_codesearchnet.json
+        --train_file train_codesearchnet_7_short.json
+        --dev_file dev_codesearchnet_short.json
         --max_seq_length 200
         --per_gpu_train_batch_size 4
         --per_gpu_eval_batch_size 4
