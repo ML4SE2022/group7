@@ -62,7 +62,10 @@ def convert_examples_to_features(js, tokenizer, args):
     padding_length = args.max_seq_length - len(code_ids)
     code_ids += [tokenizer.pad_token_id]*padding_length
 
-    nl = js['doc']  # query
+    # TODO: Parse and prepare AST for feeding into neural network
+
+    # query
+    nl = js['doc']
     nl_tokens = tokenizer.tokenize(nl)[:args.max_seq_length-2]
     nl_tokens = [tokenizer.cls_token]+nl_tokens+[tokenizer.sep_token]
     nl_ids = tokenizer.convert_tokens_to_ids(nl_tokens)
@@ -102,9 +105,11 @@ class TextDataset(Dataset):
 
     def __getitem__(self, i):
         """ return both tokenized code ids and nl ids and label"""
-        return torch.tensor(self.examples[i].code_ids), \
-               torch.tensor(self.examples[i].nl_ids),\
-               torch.tensor(self.examples[i].label)
+        return (torch.tensor(self.examples[i].code_ids),
+                # TODO: Replace with actual tensor after parsing AST
+                torch.tensor([i for i in range(len(self.examples[i].code_ids))]),
+                torch.tensor(self.examples[i].nl_ids),
+                torch.tensor(self.examples[i].label))
 
 
 

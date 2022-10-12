@@ -30,15 +30,18 @@ class Model(PreTrainedModel):
         self.loss_func = nn.BCELoss()
         self.args = args
 
-    def forward(self, code_inputs, nl_inputs, labels, return_vec=False):
+    def forward(self, code_inputs, ast_inputs, nl_inputs, labels, return_vec=False):
         bs = code_inputs.shape[0]
-        inputs = torch.cat((code_inputs, nl_inputs), 0)
+        inputs = torch.cat((code_inputs, ast_inputs, nl_inputs), 0)
         outputs = self.encoder(inputs, attention_mask=inputs.ne(1))[1]
         code_vec = outputs[:bs]
-        nl_vec = outputs[bs:]
+        ast_vec = outputs[bs:2*bs]
+        nl_vec = outputs[2*bs:]
         if return_vec:
-            return code_vec, nl_vec
+            return code_vec, ast_vec, nl_vec
 
+        # logits = self.mlp(torch.cat((nl_vec, code_vec, nl_vec-code_vec, nl_vec*code_vec), 1))
+        # TODO: Use the AST tensor
         logits = self.mlp(torch.cat((nl_vec, code_vec, nl_vec-code_vec, nl_vec*code_vec), 1))
         loss = self.loss_func(logits, labels.float())
         predictions = (logits > 0.5).int()  # (Batch, )

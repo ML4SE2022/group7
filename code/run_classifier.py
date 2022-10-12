@@ -139,9 +139,10 @@ def train(args, train_dataset, model, tokenizer):
         for step, batch in bar:
 
             code_inputs = batch[0].to(args.device)
-            nl_inputs = batch[1].to(args.device)
-            labels = batch[2].to(args.device)
-            loss, predictions = model(code_inputs, nl_inputs, labels)
+            ast_inputs = batch[1].to(args.device)
+            nl_inputs = batch[2].to(args.device)
+            labels = batch[3].to(args.device)
+            loss, predictions = model(code_inputs, ast_inputs, nl_inputs, labels)
 
             if args.n_gpu > 1:
                 loss = loss.mean()  # mean() to average on multi-gpu parallel training
