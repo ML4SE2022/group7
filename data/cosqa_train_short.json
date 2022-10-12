@@ -1,0 +1,154 @@
+[
+ {
+  "idx": "cosqa-train-0",
+  "doc": "python code to write bool value 1",
+  "code": "def writeBoolean(self, n):\n        \"\"\"\n        Writes a Boolean to the stream.\n        \"\"\"\n        t = TYPE_BOOL_TRUE\n\n        if n is False:\n            t = TYPE_BOOL_FALSE\n\n        self.stream.write(t)",
+  "code_tokens": "def writeBoolean ( self , n ) : t = TYPE_BOOL_TRUE if n is False : t = TYPE_BOOL_FALSE self . stream . write ( t )",
+  "docstring_tokens": "Writes a Boolean to the stream .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-1",
+  "doc": "\"python how to manipulate clipboard\"",
+  "code": "def paste(xsel=False):\n    \"\"\"Returns system clipboard contents.\"\"\"\n    selection = \"primary\" if xsel else \"clipboard\"\n    try:\n        return subprocess.Popen([\"xclip\", \"-selection\", selection, \"-o\"], stdout=subprocess.PIPE).communicate()[0].decode(\"utf-8\")\n    except OSError as why:\n        raise XclipNotFound",
+  "code_tokens": "def paste ( xsel = False ) : selection = \"primary\" if xsel else \"clipboard\" try : return subprocess . Popen ( [ \"xclip\" , \"-selection\" , selection , \"-o\" ] , stdout = subprocess . PIPE ) . communicate ( ) [ 0 ] . decode ( \"utf-8\" ) except OSError as why : raise XclipNotFound",
+  "docstring_tokens": "Returns system clipboard contents .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-2",
+  "doc": "python colored output to html",
+  "code": "def _format_json(data, theme):\n    \"\"\"Pretty print a dict as a JSON, with colors if pygments is present.\"\"\"\n    output = json.dumps(data, indent=2, sort_keys=True)\n\n    if pygments and sys.stdout.isatty():\n        style = get_style_by_name(theme)\n        formatter = Terminal256Formatter(style=style)\n        return pygments.highlight(output, JsonLexer(), formatter)\n\n    return output",
+  "code_tokens": "def _format_json ( data , theme ) : output = json . dumps ( data , indent = 2 , sort_keys = True ) if pygments and sys . stdout . isatty ( ) : style = get_style_by_name ( theme ) formatter = Terminal256Formatter ( style = style ) return pygments . highlight ( output , JsonLexer ( ) , formatter ) return output",
+  "docstring_tokens": "Pretty print a dict as a JSON with colors if pygments is present .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-3",
+  "doc": "python \"create directory\" using \"relative path\"",
+  "code": "def create_path(path):\n    \"\"\"Creates a absolute path in the file system.\n\n    :param path: The path to be created\n    \"\"\"\n    import os\n    if not os.path.exists(path):\n        os.makedirs(path)",
+  "code_tokens": "def create_path ( path ) : import os if not os . path . exists ( path ) : os . makedirs ( path )",
+  "docstring_tokens": "Creates a absolute path in the file system .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-4",
+  "doc": "python column of an array",
+  "code": "def _vector_or_scalar(x, type='row'):\n    \"\"\"Convert an object to either a scalar or a row or column vector.\"\"\"\n    if isinstance(x, (list, tuple)):\n        x = np.array(x)\n    if isinstance(x, np.ndarray):\n        assert x.ndim == 1\n        if type == 'column':\n            x = x[:, None]\n    return x",
+  "code_tokens": "def _vector_or_scalar ( x , type = 'row' ) : if isinstance ( x , ( list , tuple ) ) : x = np . array ( x ) if isinstance ( x , np . ndarray ) : assert x . ndim == 1 if type == 'column' : x = x [ : , None ] return x",
+  "docstring_tokens": "Convert an object to either a scalar or a row or column vector .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-5",
+  "doc": "python calling a property returns \"property object\"",
+  "code": "def experiment_property(prop):\n    \"\"\"Get a property of the experiment by name.\"\"\"\n    exp = experiment(session)\n    p = getattr(exp, prop)\n    return success_response(field=prop, data=p, request_type=prop)",
+  "code_tokens": "def experiment_property ( prop ) : exp = experiment ( session ) p = getattr ( exp , prop ) return success_response ( field = prop , data = p , request_type = prop )",
+  "docstring_tokens": "Get a property of the experiment by name .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-6",
+  "doc": "python combine wav file into one as separate channels",
+  "code": "def data_from_file(file):\n    \"\"\"Return (first channel data, sample frequency, sample width) from a .wav\n    file.\"\"\"\n    fp = wave.open(file, 'r')\n    data = fp.readframes(fp.getnframes())\n    channels = fp.getnchannels()\n    freq = fp.getframerate()\n    bits = fp.getsampwidth()\n\n    # Unpack bytes -- warning currently only tested with 16 bit wavefiles. 32\n    # bit not supported.\n    data = struct.unpack(('%sh' % fp.getnframes()) * channels, data)\n\n    # Only use first channel\n    channel1 = []\n    n = 0\n    for d in data:\n        if n % channels == 0:\n            channel1.append(d)\n        n += 1\n    fp.close()\n    return (channel1, freq, bits)",
+  "code_tokens": "def data_from_file ( file ) : fp = wave . open ( file , 'r' ) data = fp . readframes ( fp . getnframes ( ) ) channels = fp . getnchannels ( ) freq = fp . getframerate ( ) bits = fp . getsampwidth ( ) # Unpack bytes -- warning currently only tested with 16 bit wavefiles. 32 # bit not supported. data = struct . unpack ( ( '%sh' % fp . getnframes ( ) ) * channels , data ) # Only use first channel channel1 = [ ] n = 0 for d in data : if n % channels == 0 : channel1 . append ( d ) n += 1 fp . close ( ) return ( channel1 , freq , bits )",
+  "docstring_tokens": "Return ( first channel data sample frequency sample width ) from a . wav file .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-7",
+  "doc": "+how to use range with a dictionary python",
+  "code": "def source_range(start, end, nr_var_dict):\n    \"\"\"\n    Given a range of source numbers, as well as a dictionary\n    containing the numbers of each source, returns a dictionary\n    containing tuples of the start and end index\n    for each source variable type.\n    \"\"\"\n\n    return OrderedDict((k, e-s)\n        for k, (s, e)\n        in source_range_tuple(start, end, nr_var_dict).iteritems())",
+  "code_tokens": "def source_range ( start , end , nr_var_dict ) : return OrderedDict ( ( k , e - s ) for k , ( s , e ) in source_range_tuple ( start , end , nr_var_dict ) . iteritems ( ) )",
+  "docstring_tokens": "Given a range of source numbers as well as a dictionary containing the numbers of each source returns a dictionary containing tuples of the start and end index for each source variable type .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-8",
+  "doc": "python compare timespan to number",
+  "code": "def timespan(start_time):\n    \"\"\"Return time in milliseconds from start_time\"\"\"\n\n    timespan = datetime.datetime.now() - start_time\n    timespan_ms = timespan.total_seconds() * 1000\n    return timespan_ms",
+  "code_tokens": "def timespan ( start_time ) : timespan = datetime . datetime . now ( ) - start_time timespan_ms = timespan . total_seconds ( ) * 1000 return timespan_ms",
+  "docstring_tokens": "Return time in milliseconds from start_time",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-9",
+  "doc": "1d array in char datatype in python",
+  "code": "def _convert_to_array(array_like, dtype):\n        \"\"\"\n        Convert Matrix attributes which are array-like or buffer to array.\n        \"\"\"\n        if isinstance(array_like, bytes):\n            return np.frombuffer(array_like, dtype=dtype)\n        return np.asarray(array_like, dtype=dtype)",
+  "code_tokens": "def _convert_to_array ( array_like , dtype ) : if isinstance ( array_like , bytes ) : return np . frombuffer ( array_like , dtype = dtype ) return np . asarray ( array_like , dtype = dtype )",
+  "docstring_tokens": "Convert Matrix attributes which are array - like or buffer to array .",
+  "label": 1
+ },
+ {
+  "idx": "cosqa-train-10",
+  "doc": "python comprehension list distinct",
+  "code": "def get_uniques(l):\n    \"\"\" Returns a list with no repeated elements.\n    \"\"\"\n    result = []\n\n    for i in l:\n        if i not in result:\n            result.append(i)\n\n    return result",
+  "code_tokens": "def get_uniques ( l ) : result = [ ] for i in l : if i not in result : result . append ( i ) return result",
+  "docstring_tokens": "Returns a list with no repeated elements .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-11",
+  "doc": "1d interpolation function python example",
+  "code": "def interp(x, xp, *args, **kwargs):\n    \"\"\"Wrap interpolate_1d for deprecated interp.\"\"\"\n    return interpolate_1d(x, xp, *args, **kwargs)",
+  "code_tokens": "def interp ( x , xp , * args , * * kwargs ) : return interpolate_1d ( x , xp , * args , * * kwargs )",
+  "docstring_tokens": "Wrap interpolate_1d for deprecated interp .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-12",
+  "doc": "python compress array to string",
+  "code": "def _array2cstr(arr):\n    \"\"\" Serializes a numpy array to a compressed base64 string \"\"\"\n    out = StringIO()\n    np.save(out, arr)\n    return b64encode(out.getvalue())",
+  "code_tokens": "def _array2cstr ( arr ) : out = StringIO ( ) np . save ( out , arr ) return b64encode ( out . getvalue ( ) )",
+  "docstring_tokens": "Serializes a numpy array to a compressed base64 string",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-13",
+  "doc": "25 and 75 percentile of a list python",
+  "code": "def percentile(values, k):\n    \"\"\"Find the percentile of a list of values.\n\n    :param list values: The list of values to find the percentile of\n    :param int k: The percentile to find\n    :rtype: float or int\n\n    \"\"\"\n    if not values:\n        return None\n    values.sort()\n    index = (len(values) * (float(k) / 100)) - 1\n    return values[int(math.ceil(index))]",
+  "code_tokens": "def percentile ( values , k ) : if not values : return None values . sort ( ) index = ( len ( values ) * ( float ( k ) / 100 ) ) - 1 return values [ int ( math . ceil ( index ) ) ]",
+  "docstring_tokens": "Find the percentile of a list of values .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-14",
+  "doc": "python compute hash of string",
+  "code": "def _string_hash(s):\n    \"\"\"String hash (djb2) with consistency between py2/py3 and persistency between runs (unlike `hash`).\"\"\"\n    h = 5381\n    for c in s:\n        h = h * 33 + ord(c)\n    return h",
+  "code_tokens": "def _string_hash ( s ) : h = 5381 for c in s : h = h * 33 + ord ( c ) return h",
+  "docstring_tokens": "String hash ( djb2 ) with consistency between py2 / py3 and persistency between runs ( unlike hash ) .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-15",
+  "doc": "3d rotatioin matrix in python",
+  "code": "def transform_from_rot_trans(R, t):\n    \"\"\"Transforation matrix from rotation matrix and translation vector.\"\"\"\n    R = R.reshape(3, 3)\n    t = t.reshape(3, 1)\n    return np.vstack((np.hstack([R, t]), [0, 0, 0, 1]))",
+  "code_tokens": "def transform_from_rot_trans ( R , t ) : R = R . reshape ( 3 , 3 ) t = t . reshape ( 3 , 1 ) return np . vstack ( ( np . hstack ( [ R , t ] ) , [ 0 , 0 , 0 , 1 ] ) )",
+  "docstring_tokens": "Transforation matrix from rotation matrix and translation vector .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-16",
+  "doc": "python concatenate bool to string",
+  "code": "def _encode_bool(name, value, dummy0, dummy1):\n    \"\"\"Encode a python boolean (True/False).\"\"\"\n    return b\"\\x08\" + name + (value and b\"\\x01\" or b\"\\x00\")",
+  "code_tokens": "def _encode_bool ( name , value , dummy0 , dummy1 ) : return b\"\\x08\" + name + ( value and b\"\\x01\" or b\"\\x00\" )",
+  "docstring_tokens": "Encode a python boolean ( True / False ) .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-17",
+  "doc": "3d rotation in python around z axis",
+  "code": "def transform_to_3d(points,normal,z=0):\n    \"\"\"Project points into 3d from 2d points.\"\"\"\n    d = np.cross(normal, (0, 0, 1))\n    M = rotation_matrix(d)\n    transformed_points = M.dot(points.T).T + z\n    return transformed_points",
+  "code_tokens": "def transform_to_3d ( points , normal , z = 0 ) : d = np . cross ( normal , ( 0 , 0 , 1 ) ) M = rotation_matrix ( d ) transformed_points = M . dot ( points . T ) . T + z return transformed_points",
+  "docstring_tokens": "Project points into 3d from 2d points .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-train-18",
+  "doc": "python condition non none",
+  "code": "def _not(condition=None, **kwargs):\n    \"\"\"\n    Return the opposite of input condition.\n\n    :param condition: condition to process.\n\n    :result: not condition.\n    :rtype: bool\n    \"\"\"\n\n    result = True\n\n    if condition is not None:\n        result = not run(condition, **kwargs)\n\n    return result",
+  "code_tokens": "def _not ( condition = None , * * kwargs ) : result = True if condition is not None : result = not run ( condition , * * kwargs ) return result",
+  "docstring_tokens": "Return the opposite of input condition .",
+  "label": 1
+ }
+]

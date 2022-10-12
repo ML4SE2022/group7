@@ -1,0 +1,171 @@
+[
+ {
+  "idx": "cosqa-dev-0",
+  "doc": "python check relation is symmetric",
+  "code": "def is_edge_consistent(graph, u, v):\n    \"\"\"Check if all edges between two nodes have the same relation.\n\n    :param pybel.BELGraph graph: A BEL Graph\n    :param tuple u: The source BEL node\n    :param tuple v: The target BEL node\n    :return: If all edges from the source to target node have the same relation\n    :rtype: bool\n    \"\"\"\n    if not graph.has_edge(u, v):\n        raise ValueError('{} does not contain an edge ({}, {})'.format(graph, u, v))\n\n    return 0 == len(set(d[RELATION] for d in graph.edge[u][v].values()))",
+  "code_tokens": "def is_edge_consistent ( graph , u , v ) : if not graph . has_edge ( u , v ) : raise ValueError ( '{} does not contain an edge ({}, {})' . format ( graph , u , v ) ) return 0 == len ( set ( d [ RELATION ] for d in graph . edge [ u ] [ v ] . values ( ) ) )",
+  "docstring_tokens": "Check if all edges between two nodes have the same relation .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-dev-1",
+  "doc": "python split strings into list of lines",
+  "code": "def split_multiline(value):\n    \"\"\"Split a multiline string into a list, excluding blank lines.\"\"\"\n    return [element for element in (line.strip() for line in value.split('\\n'))\n            if element]",
+  "code_tokens": "def split_multiline ( value ) : return [ element for element in ( line . strip ( ) for line in value . split ( '\\n' ) ) if element ]",
+  "docstring_tokens": "Split a multiline string into a list excluding blank lines .",
+  "label": 1
+ },
+ {
+  "idx": "cosqa-dev-2",
+  "doc": "python notify all other threads to stop",
+  "code": "def wait_until_exit(self):\n        \"\"\" Wait until all the threads are finished.\n\n        \"\"\"\n        [t.join() for t in self.threads]\n\n        self.threads = list()",
+  "code_tokens": "def wait_until_exit ( self ) : [ t . join ( ) for t in self . threads ] self . threads = list ( )",
+  "docstring_tokens": "Wait until all the threads are finished .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-dev-3",
+  "doc": "loading a series of images in python and resizing them",
+  "code": "def load_preprocess_images(image_paths: List[str], image_size: tuple) -> List[np.ndarray]:\n    \"\"\"\n    Load and pre-process the images specified with absolute paths.\n\n    :param image_paths: List of images specified with paths.\n    :param image_size: Tuple to resize the image to (Channels, Height, Width)\n    :return: A list of loaded images (numpy arrays).\n    \"\"\"\n    image_size = image_size[1:]  # we do not need the number of channels\n    images = []\n    for image_path in image_paths:\n        images.append(load_preprocess_image(image_path, image_size))\n    return images",
+  "code_tokens": "def load_preprocess_images ( image_paths : List [ str ] , image_size : tuple ) -> List [ np . ndarray ] : image_size = image_size [ 1 : ] # we do not need the number of channels images = [ ] for image_path in image_paths : images . append ( load_preprocess_image ( image_path , image_size ) ) return images",
+  "docstring_tokens": "Load and pre - process the images specified with absolute paths .",
+  "label": 1
+ },
+ {
+  "idx": "cosqa-dev-4",
+  "doc": "python use numpy array as list in code",
+  "code": "def shape_list(l,shape,dtype):\n    \"\"\" Shape a list of lists into the appropriate shape and data type \"\"\"\n    return np.array(l, dtype=dtype).reshape(shape)",
+  "code_tokens": "def shape_list ( l , shape , dtype ) : return np . array ( l , dtype = dtype ) . reshape ( shape )",
+  "docstring_tokens": "Shape a list of lists into the appropriate shape and data type",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-dev-5",
+  "doc": "python save graph into file",
+  "code": "def to_dotfile(G: nx.DiGraph, filename: str):\n    \"\"\" Output a networkx graph to a DOT file. \"\"\"\n    A = to_agraph(G)\n    A.write(filename)",
+  "code_tokens": "def to_dotfile ( G : nx . DiGraph , filename : str ) : A = to_agraph ( G ) A . write ( filename )",
+  "docstring_tokens": "Output a networkx graph to a DOT file .",
+  "label": 1
+ },
+ {
+  "idx": "cosqa-dev-6",
+  "doc": "add color to print python",
+  "code": "def write_color(string, name, style='normal', when='auto'):\n    \"\"\" Write the given colored string to standard out. \"\"\"\n    write(color(string, name, style, when))",
+  "code_tokens": "def write_color ( string , name , style = 'normal' , when = 'auto' ) : write ( color ( string , name , style , when ) )",
+  "docstring_tokens": "Write the given colored string to standard out .",
+  "label": 1
+ },
+ {
+  "idx": "cosqa-dev-7",
+  "doc": "python detect if cpython or pypu",
+  "code": "def supports_py3(project_name):\n    \"\"\"Check with PyPI if a project supports Python 3.\"\"\"\n    log = logging.getLogger(\"ciu\")\n    log.info(\"Checking {} ...\".format(project_name))\n    request = requests.get(\"https://pypi.org/pypi/{}/json\".format(project_name))\n    if request.status_code >= 400:\n        log = logging.getLogger(\"ciu\")\n        log.warning(\"problem fetching {}, assuming ported ({})\".format(\n                        project_name, request.status_code))\n        return True\n    response = request.json()\n    return any(c.startswith(\"Programming Language :: Python :: 3\")\n               for c in response[\"info\"][\"classifiers\"])",
+  "code_tokens": "def supports_py3 ( project_name ) : log = logging . getLogger ( \"ciu\" ) log . info ( \"Checking {} ...\" . format ( project_name ) ) request = requests . get ( \"https://pypi.org/pypi/{}/json\" . format ( project_name ) ) if request . status_code >= 400 : log = logging . getLogger ( \"ciu\" ) log . warning ( \"problem fetching {}, assuming ported ({})\" . format ( project_name , request . status_code ) ) return True response = request . json ( ) return any ( c . startswith ( \"Programming Language :: Python :: 3\" ) for c in response [ \"info\" ] [ \"classifiers\" ] )",
+  "docstring_tokens": "Check with PyPI if a project supports Python 3 .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-dev-8",
+  "doc": "python create c dll with ctypes",
+  "code": "def load(self, name):\n        \"\"\"Loads and returns foreign library.\"\"\"\n        name = ctypes.util.find_library(name)\n        return ctypes.cdll.LoadLibrary(name)",
+  "code_tokens": "def load ( self , name ) : name = ctypes . util . find_library ( name ) return ctypes . cdll . LoadLibrary ( name )",
+  "docstring_tokens": "Loads and returns foreign library .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-dev-9",
+  "doc": "python limit number to two decimals",
+  "code": "def truncate(value: Decimal, n_digits: int) -> Decimal:\n    \"\"\"Truncates a value to a number of decimals places\"\"\"\n    return Decimal(math.trunc(value * (10 ** n_digits))) / (10 ** n_digits)",
+  "code_tokens": "def truncate ( value : Decimal , n_digits : int ) -> Decimal : return Decimal ( math . trunc ( value * ( 10 ** n_digits ) ) ) / ( 10 ** n_digits )",
+  "docstring_tokens": "Truncates a value to a number of decimals places",
+  "label": 1
+ },
+ {
+  "idx": "cosqa-dev-10",
+  "doc": "get the last record in sql python",
+  "code": "def get_last_id(self, cur, table='reaction'):\n        \"\"\"\n        Get the id of the last written row in table\n\n        Parameters\n        ----------\n        cur: database connection().cursor() object\n        table: str\n            'reaction', 'publication', 'publication_system', 'reaction_system'\n\n        Returns: id\n        \"\"\"\n        cur.execute(\"SELECT seq FROM sqlite_sequence WHERE name='{0}'\"\n                    .format(table))\n        result = cur.fetchone()\n        if result is not None:\n            id = result[0]\n        else:\n            id = 0\n        return id",
+  "code_tokens": "def get_last_id ( self , cur , table = 'reaction' ) : cur . execute ( \"SELECT seq FROM sqlite_sequence WHERE name='{0}'\" . format ( table ) ) result = cur . fetchone ( ) if result is not None : id = result [ 0 ] else : id = 0 return id",
+  "docstring_tokens": "Get the id of the last written row in table",
+  "label": 1
+ },
+ {
+  "idx": "cosqa-dev-11",
+  "doc": "python update docstring while inheretance",
+  "code": "def inheritdoc(method):\n    \"\"\"Set __doc__ of *method* to __doc__ of *method* in its parent class.\n\n    Since this is used on :class:`.StringMixIn`, the \"parent class\" used is\n    ``str``. This function can be used as a decorator.\n    \"\"\"\n    method.__doc__ = getattr(str, method.__name__).__doc__\n    return method",
+  "code_tokens": "def inheritdoc ( method ) : method . __doc__ = getattr ( str , method . __name__ ) . __doc__ return method",
+  "docstring_tokens": "Set __doc__ of * method * to __doc__ of * method * in its parent class .",
+  "label": 1
+ },
+ {
+  "idx": "cosqa-dev-12",
+  "doc": "setdefault dictionary function python",
+  "code": "def setDictDefaults (d, defaults):\n  \"\"\"Sets all defaults for the given dictionary to those contained in a\n  second defaults dictionary.  This convenience method calls:\n\n    d.setdefault(key, value)\n\n  for each key and value in the given defaults dictionary.\n  \"\"\"\n  for key, val in defaults.items():\n    d.setdefault(key, val)\n\n  return d",
+  "code_tokens": "def setDictDefaults ( d , defaults ) : for key , val in defaults . items ( ) : d . setdefault ( key , val ) return d",
+  "docstring_tokens": "Sets all defaults for the given dictionary to those contained in a second defaults dictionary . This convenience method calls :",
+  "label": 1
+ },
+ {
+  "idx": "cosqa-dev-13",
+  "doc": "python how to limit the rate of http request",
+  "code": "def _ratelimited_get(self, *args, **kwargs):\n        \"\"\"Perform get request, handling rate limiting.\"\"\"\n        with self._ratelimiter:\n            resp = self.session.get(*args, **kwargs)\n\n        # It's possible that Space-Track will return HTTP status 500 with a\n        # query rate limit violation. This can happen if a script is cancelled\n        # before it has finished sleeping to satisfy the rate limit and it is\n        # started again.\n        #\n        # Let's catch this specific instance and retry once if it happens.\n        if resp.status_code == 500:\n            # Let's only retry if the error page tells us it's a rate limit\n            # violation.\n            if 'violated your query rate limit' in resp.text:\n                # Mimic the RateLimiter callback behaviour.\n                until = time.time() + self._ratelimiter.period\n                t = threading.Thread(target=self._ratelimit_callback, args=(until,))\n                t.daemon = True\n                t.start()\n                time.sleep(self._ratelimiter.period)\n\n                # Now retry\n                with self._ratelimiter:\n                    resp = self.session.get(*args, **kwargs)\n\n        return resp",
+  "code_tokens": "def _ratelimited_get ( self , * args , * * kwargs ) : with self . _ratelimiter : resp = self . session . get ( * args , * * kwargs ) # It's possible that Space-Track will return HTTP status 500 with a # query rate limit violation. This can happen if a script is cancelled # before it has finished sleeping to satisfy the rate limit and it is # started again. # # Let's catch this specific instance and retry once if it happens. if resp . status_code == 500 : # Let's only retry if the error page tells us it's a rate limit # violation. if 'violated your query rate limit' in resp . text : # Mimic the RateLimiter callback behaviour. until = time . time ( ) + self . _ratelimiter . period t = threading . Thread ( target = self . _ratelimit_callback , args = ( until , ) ) t . daemon = True t . start ( ) time . sleep ( self . _ratelimiter . period ) # Now retry with self . _ratelimiter : resp = self . session . get ( * args , * * kwargs ) return resp",
+  "docstring_tokens": "Perform get request handling rate limiting .",
+  "label": 1
+ },
+ {
+  "idx": "cosqa-dev-14",
+  "doc": "python unittest not discovered",
+  "code": "def test():\n    \"\"\"Run the unit tests.\"\"\"\n    import unittest\n    tests = unittest.TestLoader().discover('tests')\n    unittest.TextTestRunner(verbosity=2).run(tests)",
+  "code_tokens": "def test ( ) : import unittest tests = unittest . TestLoader ( ) . discover ( 'tests' ) unittest . TextTestRunner ( verbosity = 2 ) . run ( tests )",
+  "docstring_tokens": "Run the unit tests .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-dev-15",
+  "doc": "custom distance matrix python",
+  "code": "def get_distance_matrix(x):\n    \"\"\"Get distance matrix given a matrix. Used in testing.\"\"\"\n    square = nd.sum(x ** 2.0, axis=1, keepdims=True)\n    distance_square = square + square.transpose() - (2.0 * nd.dot(x, x.transpose()))\n    return nd.sqrt(distance_square)",
+  "code_tokens": "def get_distance_matrix ( x ) : square = nd . sum ( x ** 2.0 , axis = 1 , keepdims = True ) distance_square = square + square . transpose ( ) - ( 2.0 * nd . dot ( x , x . transpose ( ) ) ) return nd . sqrt ( distance_square )",
+  "docstring_tokens": "Get distance matrix given a matrix . Used in testing .",
+  "label": 1
+ },
+ {
+  "idx": "cosqa-dev-16",
+  "doc": "python cast derived to base",
+  "code": "def _opt_call_from_base_type(self, value):\n    \"\"\"Call _from_base_type() if necessary.\n\n    If the value is a _BaseValue instance, unwrap it and call all\n    _from_base_type() methods.  Otherwise, return the value\n    unchanged.\n    \"\"\"\n    if isinstance(value, _BaseValue):\n      value = self._call_from_base_type(value.b_val)\n    return value",
+  "code_tokens": "def _opt_call_from_base_type ( self , value ) : if isinstance ( value , _BaseValue ) : value = self . _call_from_base_type ( value . b_val ) return value",
+  "docstring_tokens": "Call _from_base_type () if necessary .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-dev-17",
+  "doc": "how to test null in python assert",
+  "code": "def assert_is_not(expected, actual, message=None, extra=None):\n    \"\"\"Raises an AssertionError if expected is actual.\"\"\"\n    assert expected is not actual, _assert_fail_message(\n        message, expected, actual, \"is\", extra\n    )",
+  "code_tokens": "def assert_is_not ( expected , actual , message = None , extra = None ) : assert expected is not actual , _assert_fail_message ( message , expected , actual , \"is\" , extra )",
+  "docstring_tokens": "Raises an AssertionError if expected is actual .",
+  "label": 0
+ },
+ {
+  "idx": "cosqa-dev-18",
+  "doc": "python get top max values from dictionary",
+  "code": "def get_keys_of_max_n(dict_obj, n):\n    \"\"\"Returns the keys that maps to the top n max values in the given dict.\n\n    Example:\n    --------\n    >>> dict_obj = {'a':2, 'b':1, 'c':5}\n    >>> get_keys_of_max_n(dict_obj, 2)\n    ['a', 'c']\n    \"\"\"\n    return sorted([\n        item[0]\n        for item in sorted(\n            dict_obj.items(), key=lambda item: item[1], reverse=True\n        )[:n]\n    ])",
+  "code_tokens": "def get_keys_of_max_n ( dict_obj , n ) : return sorted ( [ item [ 0 ] for item in sorted ( dict_obj . items ( ) , key = lambda item : item [ 1 ] , reverse = True ) [ : n ] ] )",
+  "docstring_tokens": "Returns the keys that maps to the top n max values in the given dict .",
+  "label": 1
+ },
+ {
+  "idx": "cosqa-dev-19",
+  "doc": "python remove comments in string from /* */",
+  "code": "def CleanseComments(line):\n  \"\"\"Removes //-comments and single-line C-style /* */ comments.\n\n  Args:\n    line: A line of C++ source.\n\n  Returns:\n    The line with single-line comments removed.\n  \"\"\"\n  commentpos = line.find('//')\n  if commentpos != -1 and not IsCppString(line[:commentpos]):\n    line = line[:commentpos].rstrip()\n  # get rid of /* ... */\n  return _RE_PATTERN_CLEANSE_LINE_C_COMMENTS.sub('', line)",
+  "code_tokens": "def CleanseComments ( line ) : commentpos = line . find ( '//' ) if commentpos != - 1 and not IsCppString ( line [ : commentpos ] ) : line = line [ : commentpos ] . rstrip ( ) # get rid of /* ... */ return _RE_PATTERN_CLEANSE_LINE_C_COMMENTS . sub ( '' , line )",
+  "docstring_tokens": "Removes // - comments and single - line C - style / * * / comments .",
+  "label": 1
+ },
+ {
+  "idx": "cosqa-dev-20",
+  "doc": "how to put an exit button in python",
+  "code": "def exit(self):\n        \"\"\"Handle interactive exit.\n\n        This method calls the ask_exit callback.\"\"\"\n        if self.confirm_exit:\n            if self.ask_yes_no('Do you really want to exit ([y]/n)?','y'):\n                self.ask_exit()\n        else:\n            self.ask_exit()",
+  "code_tokens": "def exit ( self ) : if self . confirm_exit : if self . ask_yes_no ( 'Do you really want to exit ([y]/n)?' , 'y' ) : self . ask_exit ( ) else : self . ask_exit ( )",
+  "docstring_tokens": "Handle interactive exit .",
+  "label": 0
+ }
+
+]
