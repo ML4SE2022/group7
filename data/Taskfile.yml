@@ -15,7 +15,9 @@ tasks:
     generates:
       - "*.pkl"
   preprocess:
-    deps: [ "unpack-model" ]
+    deps:
+     - "unpack-model"
+     - ":venv:create"
     cmds: [ "{{.VENV_PYTHON}} preprocess.py" ]
     sources:
       - "preprocess.py"

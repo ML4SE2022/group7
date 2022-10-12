@@ -16,11 +16,10 @@ tasks:
   venv:create:
     cmds:
       - "python -m venv {{.VENV}}"
-      - "{{.VENV_PIP}} install -r requirements.txt"
-    generates: ["{{.VENV_PYTHON}}"]
-  venv:activate:
-    deps: [ "venv:create" ]
-    cmds: ["source {{.VENV}}/bin/activate"]
+      - task: venv:install
+    status: ["test -d {{.VENV}}"]
+  venv:install: "{{.VENV_PIP}} install -r requirements.txt"
+  venv:clean: "rm -r {{.VENV}}"
   clean:
     deps:
       - "data:clean"

@@ -1,7 +1,10 @@
 version: 3
 
 tasks:
-  run-classifier: >
+  run-classifier:
+    deps: [":venv:create"]
+    cmds:
+      - >
         {{.VENV_PYTHON}} code/run_classifier.py
         --model_type roberta
         --do_train
@@ -20,7 +23,10 @@ tasks:
         --data_dir ./data/
         --output_dir ./model_codesearchnet
         --encoder_name_or_path microsoft/codebert-base
-  dev-run-classifier: >
+  dev-run-classifier:
+    deps: [":venv:create"]
+    cmds:
+      - >
         {{.VENV_PYTHON}} code/run_classifier.py
         --model_type roberta
         --do_train
