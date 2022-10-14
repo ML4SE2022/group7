@@ -1,0 +1,26 @@
+version: 3
+
+vars:
+  VENV: "{{.ROOT_DIR}}/venv"
+  VENV_PYTHON: "{{.VENV}}/bin/python"
+  VENV_PIP: "{{.VENV}}/bin/pip"
+
+includes:
+  data:
+    dir: "data"
+    taskfile: "data"
+  code:
+    taskfile: "code"
+
+tasks:
+  venv:create:
+    cmds:
+      - "python -m venv {{.VENV}}"
+      - task: venv:install
+    status: ["test -d {{.VENV}}"]
+  venv:install: "{{.VENV_PIP}} install -r requirements.txt"
+  venv:clean: "rm -r {{.VENV}}"
+  clean:
+    deps:
+      - "code:clean"
+      - "data:clean"

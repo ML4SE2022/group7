@@ -29,7 +29,7 @@ import torch
 
 csv.field_size_limit(sys.maxsize)
 logger = logging.getLogger(__name__)
-
+logger.setLevel(logging.INFO)
 
 class InputFeatures(object):
     """A single training/test features for a example."""
@@ -77,6 +77,9 @@ class TextDataset(Dataset):
         # json file: dict: idx, query, doc, code
         self.examples = []
         self.type = type
+
+        logger.info(f"Loading data from {file_path}")
+
         data=[]
         with open(file_path, 'r') as f:
             data = json.load(f)

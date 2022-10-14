@@ -1,0 +1,31 @@
+version: 3
+
+vars:
+  MODEL_URL: "https://s3.amazonaws.com/code-search-net/CodeSearchNet/v2/python.zip"
+
+tasks:
+  download-model:
+    cmds: [ "wget {{.MODEL_URL}}" ]
+    generates: [ "python.zip" ]
+    status: [ "test -f python.zip" ]
+  unpack-model:
+    deps: [ "download-model" ]
+    cmds: [ "unzip python.zip" ]
+    status: [ "test -d python" ]
+    generates:
+      - "*.pkl"
+  preprocess:
+    deps:
+     - "unpack-model"
+     - ":venv:create"
+    cmds: [ "{{.VENV_PYTHON}} preprocess.py" ]
+    sources:
+      - "preprocess.py"
+    generates:
+      - "dev_codesearchnet.json"
+      - "train_codesearchnet_*.json"
+  clean:
+    - "rm dev_codesearchnet.json"
+    - "rm train_codesearchnet_*.json"
+    - "rm -r python"
+    - "rm -r *.pkl"
