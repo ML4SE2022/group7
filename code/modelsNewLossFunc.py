@@ -1,5 +1,5 @@
 from transformers.modeling_utils import PreTrainedModel
-from torch.nn import CrossEntropyLoss, MSELoss
+from torch.nn import CrossEntropyLoss, MSELoss, SmoothL1Loss
 import torch.nn.functional as F
 import torch
 import torch.nn as nn
@@ -25,8 +25,7 @@ class Model(PreTrainedModel):
                                  nn.Tanh(),
                                  nn.Linear(768, 1),
                                  nn.Sigmoid())
-        # from https://pytorch.org/docs/0.3.0/nn.html#torch.nn.BCEWithLogitsLoss
-        self.loss_func = nn.BCELossWithLogitsLoss()
+        self.loss_func = nn.SmoothL1Loss()
         self.args = args
 
     def forward(self, code_inputs, nl_inputs, labels, return_vec=False):
