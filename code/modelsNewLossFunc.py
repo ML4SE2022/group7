@@ -1,12 +1,14 @@
 from transformers.modeling_utils import PreTrainedModel
-from torch.nn import CrossEntropyLoss, MSELoss
+from torch.nn import CrossEntropyLoss, MSELoss, BCEWithLogitsLoss, SmoothL1Loss
 import torch.nn.functional as F
 import torch
 import torch.nn as nn
 import torch
 from torch.autograd import Variable
 import copy
+# from transformers.modeling_bert import BertLayerNorm
 BertLayerNorm = torch.nn.LayerNorm
+
 # from transformers import (WEIGHTS_NAME, AdamW, get_linear_schedule_with_warmup,
 #                           BertConfig, BertForMaskedLM, BertTokenizer,
 #                           GPT2Config, GPT2LMHeadModel, GPT2Tokenizer,
@@ -25,12 +27,10 @@ class Model(PreTrainedModel):
                                  nn.Tanh(),
                                  nn.Linear(768, 1),
                                  nn.Sigmoid())
-        # from https://pytorch.org/docs/0.3.0/nn.html#torch.nn.BCEWithLogitsLoss
-        self.loss_func = nn.BCELossWithLogitsLoss()
+        self.loss_func = nn.SmoothL1Loss()
         self.args = args
 
     def forward(self, code_inputs, nl_inputs, labels, return_vec=False):
-
         bs = code_inputs.shape[0]
         inputs = torch.cat((code_inputs, nl_inputs), 0)
         outputs = self.encoder(inputs, attention_mask=inputs.ne(1))[1]
