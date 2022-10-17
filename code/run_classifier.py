@@ -257,10 +257,11 @@ def evaluate(args, model, tokenizer,eval_when_training=False):
     all_labels = []
     for batch in eval_dataloader:
         code_inputs = batch[0].to(args.device)
-        nl_inputs = batch[1].to(args.device)
-        labels = batch[2].to(args.device)
+        ast_inputs = batch[1].to(args.device)
+        nl_inputs = batch[2].to(args.device)
+        labels = batch[3].to(args.device)
         with torch.no_grad():
-            lm_loss, predictions = model(code_inputs, nl_inputs, labels)
+            lm_loss, predictions = model(code_inputs, ast_inputs, nl_inputs, labels)
             # lm_loss,code_vec,nl_vec = model(code_inputs,nl_inputs)
             eval_loss += lm_loss.mean().item()
             all_predictions.append(predictions.cpu())

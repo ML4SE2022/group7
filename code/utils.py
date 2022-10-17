@@ -17,6 +17,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+import ast
 import csv
 import json
 import logging
@@ -30,12 +31,14 @@ import torch
 csv.field_size_limit(sys.maxsize)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+ast_dict = []
 
 class InputFeatures(object):
     """A single training/test features for a example."""
-    def __init__(self, code_tokens, code_ids, nl_tokens, nl_ids, label, idx):
+    def __init__(self, code_tokens, code_ids, code_ast, nl_tokens, nl_ids, label, idx):
         self.code_tokens = code_tokens
         self.code_ids = code_ids
+        self.code_ast = code_ast
         self.nl_tokens = nl_tokens
         self.nl_ids = nl_ids
         self.label = label
@@ -62,7 +65,16 @@ def convert_examples_to_features(js, tokenizer, args):
     padding_length = args.max_seq_length - len(code_ids)
     code_ids += [tokenizer.pad_token_id]*padding_length
 
-    # TODO: Parse and prepare AST for feeding into neural network
+    # ast
+    code_ast = []
+    for node in ast.walk(ast.parse(code)):
+        name = node.__class__.__name__
+        if ast_dict.count(name) == 0:
+            ast_dict.append(name)
+        code_ast.append(ast_dict.index(name))
+    padding_length = args.max_seq_length - len(code_ast)
+    # TODO: Check which padding token makes sense
+    code_ast += [100]*padding_length
 
     # query
     nl = js['doc']
@@ -72,7 +84,7 @@ def convert_examples_to_features(js, tokenizer, args):
     padding_length = args.max_seq_length - len(nl_ids)
     nl_ids += [tokenizer.pad_token_id]*padding_length
 
-    return InputFeatures(code_tokens, code_ids, nl_tokens, nl_ids, label, js['idx'])
+    return InputFeatures(code_tokens, code_ids, code_ast, nl_tokens, nl_ids, label, js['idx'])
 
 
 class TextDataset(Dataset):
@@ -106,8 +118,7 @@ class TextDataset(Dataset):
     def __getitem__(self, i):
         """ return both tokenized code ids and nl ids and label"""
         return (torch.tensor(self.examples[i].code_ids),
-                # TODO: Replace with actual tensor after parsing AST
-                torch.tensor([i for i in range(len(self.examples[i].code_ids))]),
+                torch.tensor(self.examples[i].code_ast),
                 torch.tensor(self.examples[i].nl_ids),
                 torch.tensor(self.examples[i].label))
 
