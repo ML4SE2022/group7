@@ -14,4 +14,4 @@ def split_in_files(json_data, amount):
 
 f = open("../data/train_codesearchnet_7.json")
 json_data = json.load(f)
-split_in_files(json_data, 10)
+split_in_files(json_data, 5)
