@@ -71,10 +71,10 @@ def convert_examples_to_features(js, tokenizer, args):
         name = node.__class__.__name__
         if ast_dict.count(name) == 0:
             ast_dict.append(name)
-        code_ast.append(ast_dict.index(name))
+        code_ast.append(ast_dict.index(name)+2)
     padding_length = args.max_seq_length - len(code_ast)
     # TODO: Check which padding token makes sense
-    code_ast += [100]*padding_length
+    code_ast += [1]*padding_length
 
     # query
     nl = js['doc']
@@ -101,8 +101,19 @@ class TextDataset(Dataset):
         if self.type == 'test':
             for js in data:
                 js['label'] = 0
+        with open('./ast_dict.json', 'r') as f:
+            if f.read(1):
+                f.seek(0)
+                ast_list = json.load(f)
+                for e in ast_list:
+                    if ast_dict.count(e) == 0:
+                        ast_dict.append(e)
+            f.close()
         for js in data:
             self.examples.append(convert_examples_to_features(js, tokenizer, args))
+        with open('ast_dict.json', 'w') as f:
+            json.dump(ast_dict, f)
+            f.close()
         if 'train' in file_path:
             for idx, example in enumerate(self.examples[:3]):
                 logger.info("*** Example ***")
