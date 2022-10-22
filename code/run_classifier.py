@@ -199,6 +199,38 @@ def train(args, train_dataset, model, tokenizer):
 
                 if args.local_rank in [-1, 0] and args.save_steps > 0 and global_step % args.save_steps == 0:
 
+                    if args.local_rank == -1:
+                        checkpoint_prefix = 'checkpoint-last'
+                        output_dir = os.path.join(
+                            args.output_dir, checkpoint_prefix)
+                        if not os.path.exists(output_dir):
+                            os.makedirs(output_dir)
+                        model_to_save = model.module if hasattr(
+                            model, 'module') else model
+                        torch.save(model_to_save.state_dict(), os.path.join(
+                            output_dir, 'pytorch_model.bin'))
+                        tokenizer.save_pretrained(output_dir)
+
+                        idx_file = os.path.join(output_dir, 'idx_file.txt')
+                        with open(idx_file, 'w', encoding='utf-8') as idxf:
+                            idxf.write(str(args.start_epoch + idx) + '\n')
+                        logger.info(
+                            "Saving model checkpoint to %s", output_dir)
+                        torch.save(optimizer.state_dict(), os.path.join(
+                            output_dir, "optimizer.pt"))
+                        torch.save(scheduler.state_dict(), os.path.join(
+                            output_dir, "scheduler.pt"))
+                        logger.info(
+                            "Saving optimizer and scheduler states to %s", output_dir)
+
+                        config_path = os.path.join(output_dir, 'config.json')
+                        model.config.to_json_file(config_path)
+                        logger.info(f"Saved config.json to {config_path}")
+
+                        step_file = os.path.join(output_dir, 'step_file.txt')
+                        with open(step_file, 'w', encoding='utf-8') as stepf:
+                            stepf.write(str(global_step) + '\n')
+
                     # Only evaluate when single GPU otherwise metrics may not average well
                     if args.local_rank == -1 and args.evaluate_during_training:
                         results = evaluate(
@@ -233,32 +265,9 @@ def train(args, train_dataset, model, tokenizer):
                             logger.info(
                                 "Saving optimizer and scheduler states to %s", output_dir)
 
-                    if args.local_rank == -1:
-                        checkpoint_prefix = 'checkpoint-last'
-                        output_dir = os.path.join(
-                            args.output_dir, checkpoint_prefix)
-                        if not os.path.exists(output_dir):
-                            os.makedirs(output_dir)
-                        model_to_save = model.module if hasattr(
-                            model, 'module') else model
-                        torch.save(model_to_save.state_dict(), os.path.join(
-                            output_dir, 'pytorch_model.bin'))
-                        tokenizer.save_pretrained(output_dir)
-
-                        idx_file = os.path.join(output_dir, 'idx_file.txt')
-                        with open(idx_file, 'w', encoding='utf-8') as idxf:
-                            idxf.write(str(args.start_epoch + idx) + '\n')
-                        logger.info(
-                            "Saving model checkpoint to %s", output_dir)
-                        torch.save(optimizer.state_dict(), os.path.join(
-                            output_dir, "optimizer.pt"))
-                        torch.save(scheduler.state_dict(), os.path.join(
-                            output_dir, "scheduler.pt"))
-                        logger.info(
-                            "Saving optimizer and scheduler states to %s", output_dir)
-                        step_file = os.path.join(output_dir, 'step_file.txt')
-                        with open(step_file, 'w', encoding='utf-8') as stepf:
-                            stepf.write(str(global_step) + '\n')
+                            config_path = os.path.join(output_dir, 'config.json')
+                            model.config.to_json_file(config_path)
+                            logger.info(f"Saved config.json to {config_path}")
 
             if args.max_steps > 0 and global_step > args.max_steps:
                 train_iterator.close()
@@ -564,13 +573,22 @@ def main():
     # Evaluation
     results = {}
     if args.do_eval and args.local_rank in [-1, 0]:
-        checkpoint_prefix = 'checkpoint-best-aver'
+        if os.path.exists(os.path.join(args.output_dir, 'checkpoint-best-aver')):
+            checkpoint_prefix = 'checkpoint-best-aver'
+        else:
+            checkpoint_prefix = 'checkpoint-last'
+
         output_dir = os.path.join(args.output_dir, checkpoint_prefix)
         model.load_state_dict(torch.load(
             os.path.join(output_dir, 'pytorch_model.bin')))
         tokenizer = tokenizer.from_pretrained(output_dir)
         model.to(args.device)
         results = evaluate(args, model, tokenizer)
+
+        config_path = os.path.join(output_dir, 'config.json')
+        model.config.to_json_file(config_path)
+        logger.info(f"Saved config.json to {config_path}")
+
         logger.info("***** Eval results *****")
         for key in results.keys():
             logger.info("  Eval %s = %s", key, str(results[key]))
@@ -579,8 +597,12 @@ def main():
         logger.info("***** Eval results *****")
 
     if args.do_predict and args.local_rank in [-1, 0]:
+        if os.path.exists(os.path.join(args.output_dir, 'checkpoint-best-aver')):
+            checkpoint_prefix = 'checkpoint-best-aver'
+        else:
+            checkpoint_prefix = 'checkpoint-last'
+
         logger.info("***** Testing results *****")
-        checkpoint_prefix = 'checkpoint-best-aver'
         if checkpoint_prefix not in args.output_dir and \
                 os.path.exists(os.path.join(args.output_dir, checkpoint_prefix)):
             output_dir = os.path.join(args.output_dir, checkpoint_prefix)
@@ -595,18 +617,10 @@ def main():
         model.to(args.device)
         test(args, model, tokenizer)
         logger.info("Test Model From: {}".format(model_path))
-        # saving config.json to the two output folders
 
-    outputDir = args.output_dir
-    path1 = f"{outputDir}/checkpoint-best-aver/config.json"
-    path2 = f"{outputDir}/checkpoint-last/config.json"
-    if (os.path.exists(f"{outputDir}/checkpoint-best-aver")):
-        model.config.to_json_file(path1)
-        logger.info(f"Saving config.json to {path1}")
-
-    if (os.path.exists(f"{outputDir}/checkpoint-last")):
-        model.config.to_json_file(path2)
-        logger.info(f"Saving config.json to {path2}")
+        config_path = os.path.join(output_dir, 'config.json')
+        model.config.to_json_file(config_path)
+        logger.info(f"Saved config.json to {config_path}")
 
     return results
 

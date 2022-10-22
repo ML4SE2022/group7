@@ -2,6 +2,7 @@ version: 3
 
 vars:
   OUTPUT_DIR: "model_codesearchnet"
+  DEV_OUTPUT_DIR: "model_codesearchnet_dev"
 
 tasks:
   clean: "rm -r {{.OUTPUT_DIR}}"
@@ -44,9 +45,9 @@ tasks:
         --learning_rate 0.1
         --num_train_epochs 1
         --max_steps 100
-        --save_steps 99
+        --save_steps 10
         --gradient_accumulation_steps 1
         --warmup_steps 10
         --data_dir ./data/
-        --output_dir {{.OUTPUT_DIR}}
+        --output_dir {{.DEV_OUTPUT_DIR}}
         --encoder_name_or_path microsoft/codebert-base
