@@ -1,13 +1,30 @@
 version: 3
 
 vars:
-  OUTPUT_DIR: "model_codesearchnet"
-  DEV_OUTPUT_DIR: "model_codesearchnet_dev"
+  CODESEARCHNET_OUTPUT_DIR: '{{ .CODESEARCHNET_OUTPUT_DIR | default "model_codesearchnet" }}'
+  COSQA_OUTPUT_DIR: '{{ .CODESEARCHNET_OUTPUT_DIR | default "model_cosqa_continue_training" }}'
+
+  DEV_CODESEARCHNET_OUTPUT_DIR: '{{ .DEV_CODESEARCHNET_OUTPUT_DIR | default "dev_model_codesearchnet" }}'
+  DEV_COSQA_OUTPUT_DIR: '{{ .DEV_COSQA_OUTPUT_DIR | default "dev_model_cosqa_continue_training" }}'
 
 tasks:
-  clean: "rm -r {{.OUTPUT_DIR}}"
-  run-classifier:
-    deps: [":venv:create"]
+  clean:
+    cmds:
+     - "rm -rf {{.CODESEARCHNET_OUTPUT_DIR}}"
+     - "rm -rf {{.COSQA_OUTPUT_DIR}}"
+     - "rm -rf {{.DEV_CODESEARCHNET_OUTPUT_DIR}}"
+     - "rm -rf {{.DEV_COSQA_OUTPUT_DIR}}"
+  ########################
+  ### PRODUCTION TASKS ###
+  ########################
+  train:
+    cmds:
+      - task: codesearchnet:train
+      - task: cosqa:train
+      - task: predict
+      - task: evaluate
+  codesearchnet:train:
+    deps: [ ":venv:create" ]
     cmds:
       - >
         {{.VENV_PYTHON}} code/run_classifier.py
@@ -26,9 +43,55 @@ tasks:
         --warmup_steps 1000
         --evaluate_during_training
         --data_dir ./data/
-        --output_dir {{.OUTPUT_DIR}}
+        --output_dir {{.CODESEARCHNET_OUTPUT_DIR}}
         --encoder_name_or_path microsoft/codebert-base
-  dev-run-classifier:
+  cosqa:train:
+    deps: [ ":venv:create" ]
+    cmds:
+      - >
+        {{.VENV_PYTHON}} code/run_classifier.py
+        --model_type roberta
+        --do_train
+        --do_eval
+        --eval_all_checkpoints
+        --train_file cosqa_train.json
+        --dev_file cosqa_dev.json
+        --max_seq_length 200
+        --per_gpu_train_batch_size 16
+        --per_gpu_eval_batch_size 16
+        --learning_rate 1e-5
+        --num_train_epochs 3
+        --gradient_accumulation_steps 1
+        --warmup_steps 5000
+        --evaluate_during_training
+        --data_dir ./CoSQA/
+        --output_dir ./{{.COSQA_OUTPUT_DIR}}
+        --encoder_name_or_path ./{{.CODESEARCHNET_OUTPUT_DIR}}
+  predict:
+    deps: [ ":venv:create" ]
+    cmds:
+      - >
+        {{.VENV_PYTHON}} code/run_classifier.py
+        --model_type roberta
+        --do_predict
+        --test_file test_webquery.json
+        --max_seq_length 200
+        --per_gpu_eval_batch_size 2
+        --data_dir ./data
+        --output_dir ./{{.COSQA_OUTPUT_DIR}}/checkpoint-best-aver/
+        --encoder_name_or_path microsoft/codebert-base
+        --pred_model_dir ./{{.COSQA_OUTPUT_DIR}}/checkpoint-last/
+        --prediction_file ./evaluator/webquery_predictions.txt
+  #########################
+  ### DEVELOPMENT TASKS ###
+  #########################
+  dev:train:
+    cmds:
+      - task: dev:codesearchnet:train
+      - task: dev:cosqa:train
+      - task: dev:predict
+      - task: evaluate
+  dev:codesearchnet:train:
     deps: [":venv:create"]
     cmds:
       - >
@@ -49,5 +112,53 @@ tasks:
         --gradient_accumulation_steps 1
         --warmup_steps 10
         --data_dir ./data/
-        --output_dir {{.DEV_OUTPUT_DIR}}
+        --output_dir ./{{.DEV_CODESEARCHNET_OUTPUT_DIR}}
         --encoder_name_or_path microsoft/codebert-base
+  dev:cosqa:train:
+    deps: [":venv:create"]
+    cmds:
+      - >
+        {{.VENV_PYTHON}} code/run_classifier.py
+        --model_type roberta
+        --do_train
+        --do_eval
+        --eval_all_checkpoints
+        --train_file cosqa_train_short.json
+        --dev_file cosqa_dev_short.json
+        --max_seq_length 200
+        --per_gpu_train_batch_size 4
+        --per_gpu_eval_batch_size 4
+        --learning_rate 0.1
+        --num_train_epochs 1
+        --max_steps 100
+        --save_steps 10
+        --gradient_accumulation_steps 1
+        --warmup_steps 10
+        --data_dir ./data/
+        --output_dir ./{{.DEV_COSQA_OUTPUT_DIR}}
+        --encoder_name_or_path ./{{.DEV_CODESEARCHNET_OUTPUT_DIR}}/checkpoint-last
+  dev:predict:
+    deps: [ ":venv:create" ]
+    cmds:
+      - >
+        {{.VENV_PYTHON}} code/run_classifier.py
+        --model_type roberta
+        --do_predict
+        --test_file test_webquery.json
+        --max_seq_length 200
+        --per_gpu_eval_batch_size 2
+        --data_dir ./data
+        --output_dir ./{{.DEV_COSQA_OUTPUT_DIR}}/checkpoint-best-aver/
+        --encoder_name_or_path microsoft/codebert-base
+        --pred_model_dir ./{{.DEV_COSQA_OUTPUT_DIR}}/checkpoint-last/
+        --prediction_file ./evaluator/webquery_predictions.txt
+  ########################
+  ### EVALUATION TASKS ###
+  ########################
+  evaluate:
+    deps: [ ":venv:create" ]
+    cmds:
+      - >
+        {{.VENV_PYTHON}} evaluator/evaluator.py
+        --answers_webquery ./evaluator/webquery_answers.txt
+        --predictions_webquery ./evaluator/webquery_predictions.txt

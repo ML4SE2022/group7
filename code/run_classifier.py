@@ -231,16 +231,20 @@ def train(args, train_dataset, model, tokenizer):
                         with open(step_file, 'w', encoding='utf-8') as stepf:
                             stepf.write(str(global_step) + '\n')
 
-                    # Only evaluate when single GPU otherwise metrics may not average well
-                    if args.local_rank == -1 and args.evaluate_during_training:
-                        results = evaluate(
-                            args, model, tokenizer, eval_when_training=True)
-                        for key, value in results.items():
-                            logger.info("  %s = %s", key, round(value, 4))
-                        # Save model checkpoint
-                        if results['acc_and_f1'] >= best_results['acc_and_f1']:
-                            best_results = results
+                        # Evaluation during training and saving best results
+                        save_best_aver = False
 
+                        if args.evaluate_during_training:
+                            results = evaluate(
+                                args, model, tokenizer, eval_when_training=True)
+                            for key, value in results.items():
+                                logger.info("  %s = %s", key, round(value, 4))
+
+                            if results['acc_and_f1'] >= best_results['acc_and_f1']:
+                                save_best_aver = True
+                                best_results = results
+
+                        if not args.evaluate_during_training or save_best_aver:
                             # save
                             checkpoint_prefix = 'checkpoint-best-aver'
                             output_dir = os.path.join(
@@ -269,7 +273,7 @@ def train(args, train_dataset, model, tokenizer):
                             model.config.to_json_file(config_path)
                             logger.info(f"Saved config.json to {config_path}")
 
-            if args.max_steps > 0 and global_step > args.max_steps:
+            if 0 < args.max_steps < global_step:
                 train_iterator.close()
                 break
 

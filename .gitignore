@@ -1,8 +1,16 @@
+# Dataset
 data/python
 data/python.zip
 data/*.pkl
 
+# Trained models
 model_codesearchnet
+model_cosqa_continue_training
+dev_model_codesearchnet
+dev_model_cosqa_continue_training
+
+# Evaluation results
+evaluator/webquery_predictions.txt
 
 # data files
 *.json
