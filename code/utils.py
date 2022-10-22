@@ -53,7 +53,7 @@ class InputFeaturesTriplet(InputFeatures):
         self.ds_ids = ds_ids
 
 
-def convert_examples_to_features(js, tokenizer, args):
+def convert_examples_to_features(js, tokenizer, args, ast):
     # label
     label = js['label']
 
@@ -66,12 +66,7 @@ def convert_examples_to_features(js, tokenizer, args):
     code_ids += [tokenizer.pad_token_id]*padding_length
 
     # ast
-    code_ast = []
-    for node in ast.walk(ast.parse(code)):
-        name = node.__class__.__name__
-        if ast_dict.count(name) == 0:
-            ast_dict.append(name)
-        code_ast.append(ast_dict.index(name)+2)
+    code_ast = ast
     padding_length = args.max_seq_length - len(code_ast)
     # TODO: Check which padding token makes sense
     code_ast += [1]*padding_length
@@ -110,7 +105,17 @@ class TextDataset(Dataset):
                         ast_dict.append(e)
             f.close()
         for js in data:
-            self.examples.append(convert_examples_to_features(js, tokenizer, args))
+            try:
+                code_ast = []
+                for node in ast.walk(ast.parse(js['code'])):
+                    name = node.__class__.__name__
+                    if ast_dict.count(name) == 0:
+                        ast_dict.append(name)
+                    code_ast.append(ast_dict.index(name) + 2)
+                self.examples.append(convert_examples_to_features(js, tokenizer, args, code_ast))
+            except:
+                continue
+
         with open('ast_dict.json', 'w') as f:
             json.dump(ast_dict, f)
             f.close()
