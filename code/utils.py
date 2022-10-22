@@ -112,7 +112,9 @@ class TextDataset(Dataset):
                     if ast_dict.count(name) == 0:
                         ast_dict.append(name)
                     code_ast.append(ast_dict.index(name) + 2)
-                self.examples.append(convert_examples_to_features(js, tokenizer, args, code_ast))
+                if(len(code_ast) <= 240):
+                    self.examples.append(convert_examples_to_features(js, tokenizer, args, code_ast))
+                
             except:
                 continue
 
