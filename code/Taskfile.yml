@@ -1,11 +1,11 @@
 version: 3
 
 vars:
-  CODESEARCHNET_OUTPUT_DIR: "model_codesearchnet"
-  COSQA_OUTPUT_DIR: "model_cosqa_continue_training"
+  CODESEARCHNET_OUTPUT_DIR: '{{ .CODESEARCHNET_OUTPUT_DIR | default "model_codesearchnet" }}'
+  COSQA_OUTPUT_DIR: '{{ .CODESEARCHNET_OUTPUT_DIR | default "model_cosqa_continue_training" }}'
 
-  DEV_CODESEARCHNET_OUTPUT_DIR: "dev_{{.CODESEARCHNET_OUTPUT_DIR}}"
-  DEV_COSQA_OUTPUT_DIR: "dev_{{.COSQA_OUTPUT_DIR}}"
+  DEV_CODESEARCHNET_OUTPUT_DIR: '{{ .DEV_CODESEARCHNET_OUTPUT_DIR | default "dev_model_codesearchnet" }}'
+  DEV_COSQA_OUTPUT_DIR: '{{ .DEV_COSQA_OUTPUT_DIR | default "dev_model_cosqa_continue_training" }}'
 
 tasks:
   clean:
