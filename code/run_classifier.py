@@ -136,6 +136,11 @@ def train(args, train_dataset, model, tokenizer):
                 args.gradient_accumulation_steps)
     logger.info("  Total optimization steps = %d", t_total)
 
+    logger.info("torch.cuda.memory_allocated: %fGB" % (torch.cuda.memory_allocated(0) / 1024 / 1024 / 1024))
+    logger.info("torch.cuda.max_memory_allocated: %fGB" % (torch.cuda.max_memory_allocated(0) / 1024 / 1024 / 1024))
+    logger.info("torch.cuda.memory_cached: %fGB" % (torch.cuda.memory_cached(0) / 1024 / 1024 / 1024))
+    logger.info("torch.cuda.max_memory_cached: %fGB" % (torch.cuda.max_memory_cached(0) / 1024 / 1024 / 1024))
+
     global_step = args.start_step
     tr_loss, logging_loss, avg_loss, tr_nb, tr_num, train_loss = 0.0, 0.0, 0.0, 0, 0, 0
     best_results = {"acc": 0.0, "precision": 0.0,
