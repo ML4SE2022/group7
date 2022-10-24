@@ -205,10 +205,8 @@ def train(args, train_dataset, model, tokenizer):
                             args.output_dir, checkpoint_prefix)
                         if not os.path.exists(output_dir):
                             os.makedirs(output_dir)
-                        model_to_save = model.module if hasattr(
-                            model, 'module') else model
-                        torch.save(model_to_save.state_dict(), os.path.join(
-                            output_dir, 'pytorch_model.bin'))
+                        model_to_save = model.module if hasattr(model, 'module') else model
+                        torch.save(model_to_save.state_dict(), os.path.join(output_dir, 'pytorch_model.bin'))
                         tokenizer.save_pretrained(output_dir)
 
                         idx_file = os.path.join(output_dir, 'idx_file.txt')
@@ -224,7 +222,10 @@ def train(args, train_dataset, model, tokenizer):
                             "Saving optimizer and scheduler states to %s", output_dir)
 
                         config_path = os.path.join(output_dir, 'config.json')
-                        model.config.to_json_file(config_path)
+                        if hasattr(model, 'module'):
+                            model.module.config.to_json_file(config_path)
+                        else:
+                            model.config.to_json_file(config_path)
                         logger.info(f"Saved config.json to {config_path}")
 
                         step_file = os.path.join(output_dir, 'step_file.txt')
@@ -270,7 +271,10 @@ def train(args, train_dataset, model, tokenizer):
                                 "Saving optimizer and scheduler states to %s", output_dir)
 
                             config_path = os.path.join(output_dir, 'config.json')
-                            model.config.to_json_file(config_path)
+                            if hasattr(model, 'module'):
+                                model.module.config.to_json_file(config_path)
+                            else:
+                                model.config.to_json_file(config_path)
                             logger.info(f"Saved config.json to {config_path}")
 
             if 0 < args.max_steps < global_step:

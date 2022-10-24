@@ -79,6 +79,10 @@ class TextDataset(Dataset):
         self.type = type
 
         logger.info(f"Loading data from {file_path}")
+        logger.info("torch.cuda.memory_allocated: %fGB" % (torch.cuda.memory_allocated(0) / 1024 / 1024 / 1024))
+        logger.info("torch.cuda.max_memory_allocated: %fGB" % (torch.cuda.max_memory_allocated(0) / 1024 / 1024 / 1024))
+        logger.info("torch.cuda.memory_cached: %fGB" % (torch.cuda.memory_cached(0) / 1024 / 1024 / 1024))
+        logger.info("torch.cuda.max_memory_cached: %fGB" % (torch.cuda.max_memory_cached(0) / 1024 / 1024 / 1024))
 
         data=[]
         with open(file_path, 'r') as f:
