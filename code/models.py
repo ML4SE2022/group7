@@ -31,3 +31,4 @@ class Model(PreTrainedModel):
         loss = self.loss_func(logits, labels.float())
         predictions = (logits > 0.5).int()
         return loss, predictions
+
