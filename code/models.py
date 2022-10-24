@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch
 from torch.autograd import Variable
 import copy
+
 # from transformers.modeling_bert import BertLayerNorm
 BertLayerNorm = torch.nn.LayerNorm
 import torch.nn.functional as F
@@ -23,7 +24,7 @@ class Model(PreTrainedModel):
         self.encoder = encoder
         self.config = config
         self.tokenizer = tokenizer
-        self.mlp = nn.Sequential(nn.Linear(768*4, 768),
+        self.mlp = nn.Sequential(nn.Linear(768 * 5, 768),
                                  nn.Tanh(),
                                  nn.Linear(768, 1),
                                  nn.Sigmoid())
@@ -39,8 +40,7 @@ class Model(PreTrainedModel):
         if return_vec:
             return code_vec, nl_vec
 
-        logits = self.mlp(torch.cat((nl_vec, code_vec, nl_vec-code_vec, nl_vec*code_vec), 1))
+        logits = self.mlp(torch.cat((nl_vec, code_vec, nl_vec - code_vec, nl_vec * code_vec, nl_vec+code_vec), 1))
         loss = self.loss_func(logits, labels.float())
         predictions = (logits > 0.5).int()  # (Batch, )
         return loss, predictions
-
