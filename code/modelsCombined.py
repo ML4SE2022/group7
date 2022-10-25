@@ -1,6 +1,7 @@
-from transformers.modeling_utils import PreTrainedModel
 import torch.nn as nn
 import torch
+from transformers.modeling_utils import PreTrainedModel
+
 BertLayerNorm = torch.nn.LayerNorm
 
 
@@ -10,15 +11,18 @@ class Model(PreTrainedModel):
         self.encoder = encoder
         self.config = config
         self.tokenizer = tokenizer
-        self.mlp = nn.Sequential(nn.Linear(768*5, 768),
-                                 nn.ReLU(),  # ReLU instead
-                                 nn.Linear(768, 1),
+        self.mlp = nn.Sequential(nn.Linear(768 * 5, 768),
+                                 nn.ReLU(),
+                                 nn.Linear(768, 384),
+                                 nn.ReLU(),
+                                 nn.Linear(384, 192),
+                                 nn.ReLU(),
+                                 nn.Linear(192, 1),
                                  nn.Sigmoid())
-        self.loss_func = nn.BCELoss()
+        self.loss_func = nn.SmoothL1Loss()
         self.args = args
 
     def forward(self, code_inputs, nl_inputs, labels, return_vec=False):
-
         bs = code_inputs.shape[0]
         inputs = torch.cat((code_inputs, nl_inputs), 0)
         outputs = self.encoder(inputs, attention_mask=inputs.ne(1))[1]
@@ -27,8 +31,7 @@ class Model(PreTrainedModel):
         if return_vec:
             return code_vec, nl_vec
 
-        logits = self.mlp(
-            torch.cat((nl_vec, code_vec, nl_vec-code_vec, nl_vec*code_vec, nl_vec+code_vec), 1))
+        logits = self.mlp(torch.cat((nl_vec, code_vec, nl_vec - code_vec, nl_vec * code_vec, nl_vec + code_vec), 1))
         loss = self.loss_func(logits, labels.float())
-        predictions = (logits > 0.5).int()  # (Batch, )
+        predictions = (logits > 0.5).int()
         return loss, predictions
