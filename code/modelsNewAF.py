@@ -21,7 +21,7 @@ class Model(PreTrainedModel):
         self.encoder = encoder
         self.config = config
         self.tokenizer = tokenizer
-        self.mlp = nn.Sequential(nn.Linear(768*4, 768),
+        self.mlp = nn.Sequential(nn.Linear(768*5, 768),
                                  nn.ReLU(),  # ReLU instead
                                  nn.Linear(768, 1),
                                  nn.Sigmoid())
@@ -39,7 +39,7 @@ class Model(PreTrainedModel):
             return code_vec, nl_vec
 
         logits = self.mlp(
-            torch.cat((nl_vec, code_vec, nl_vec-code_vec, nl_vec*code_vec), 1))
+            torch.cat((nl_vec, code_vec, nl_vec-code_vec, nl_vec*code_vec, nl_vec+code_vec), 1))
         loss = self.loss_func(logits, labels.float())
         predictions = (logits > 0.5).int()  # (Batch, )
         return loss, predictions

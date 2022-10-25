@@ -1,21 +1,8 @@
-import torch
 import torch.nn as nn
 import torch
-from torch.autograd import Variable
-import copy
-
-# from transformers.modeling_bert import BertLayerNorm
-BertLayerNorm = torch.nn.LayerNorm
-import torch.nn.functional as F
-
-from torch.nn import CrossEntropyLoss, MSELoss
-# from transformers import (WEIGHTS_NAME, AdamW, get_linear_schedule_with_warmup,
-#                           BertConfig, BertForMaskedLM, BertTokenizer,
-#                           GPT2Config, GPT2LMHeadModel, GPT2Tokenizer,
-#                           OpenAIGPTConfig, OpenAIGPTLMHeadModel, OpenAIGPTTokenizer,
-#                           RobertaConfig, RobertaModel, RobertaTokenizer,
-#                           DistilBertConfig, DistilBertForMaskedLM, DistilBertTokenizer)
 from transformers.modeling_utils import PreTrainedModel
+
+BertLayerNorm = torch.nn.LayerNorm
 
 
 class Model(PreTrainedModel):
@@ -40,7 +27,7 @@ class Model(PreTrainedModel):
         if return_vec:
             return code_vec, nl_vec
 
-        logits = self.mlp(torch.cat((nl_vec, code_vec, nl_vec - code_vec, nl_vec * code_vec, nl_vec+code_vec), 1))
+        logits = self.mlp(torch.cat((nl_vec, code_vec, nl_vec - code_vec, nl_vec * code_vec, nl_vec + code_vec), 1))
         loss = self.loss_func(logits, labels.float())
-        predictions = (logits > 0.5).int()  # (Batch, )
+        predictions = (logits > 0.5).int()
         return loss, predictions
