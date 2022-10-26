@@ -96,14 +96,18 @@ class TextDataset(Dataset):
         if self.type == 'test':
             for js in data:
                 js['label'] = 0
-        with open('./ast_dict.json', 'r') as f:
-            if f.read(1):
-                f.seek(0)
-                ast_list = json.load(f)
-                for e in ast_list:
-                    if ast_dict.count(e) == 0:
-                        ast_dict.append(e)
-            f.close()
+        try:
+            with open('./ast_dict.json', 'r') as f:
+                if f.read(1):
+                    f.seek(0)
+                    ast_list = json.load(f)
+                    for e in ast_list:
+                        if ast_dict.count(e) == 0:
+                            ast_dict.append(e)
+                f.close()
+        except FileNotFoundError:
+            with open('ast_dict.json', 'w') as f:
+                f.close()
         for js in data:
             try:
                 code_ast = []
@@ -114,7 +118,7 @@ class TextDataset(Dataset):
                     code_ast.append(ast_dict.index(name) + 2)
                 if(len(code_ast) <= 200):
                     self.examples.append(convert_examples_to_features(js, tokenizer, args, code_ast))
-                
+
             except:
                 continue
 
