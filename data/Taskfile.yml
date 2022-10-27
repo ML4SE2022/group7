@@ -1,16 +1,20 @@
 version: 3
 
 vars:
+  MODEL_DOWNLOAD_DIR: "model_download"
   MODEL_URL: "https://s3.amazonaws.com/code-search-net/CodeSearchNet/v2/python.zip"
 
 tasks:
   download-model:
-    cmds: [ "wget {{.MODEL_URL}}" ]
-    generates: [ "python.zip" ]
-    status: [ "test -f python.zip" ]
+    cmds:
+      - "mkdir -p {{.MODEL_DOWNLOAD_DIR}}"
+      - "wget -P {{.MODEL_DOWNLOAD_DIR}} {{.MODEL_URL}}"
+    generates: [ "{{.MODEL_DOWNLOAD_DIR}}/python.zip" ]
+    # Download model if it's not present yet or if it wasn't unpacked before
+    status: [ "test -f {{.MODEL_DOWNLOAD_DIR}}/python.zip || test -d python" ]
   unpack-model:
     deps: [ "download-model" ]
-    cmds: [ "unzip python.zip" ]
+    cmds: [ "unzip {{.MODEL_DOWNLOAD_DIR}}/python.zip" ]
     status: [ "test -d python" ]
     generates:
       - "*.pkl"
@@ -29,3 +33,5 @@ tasks:
     - "rm train_codesearchnet_*.json"
     - "rm -r python"
     - "rm -r *.pkl"
+  clean:download-model:
+    - "rm -r {{.MODEL_DOWNLOAD_DIR}}"

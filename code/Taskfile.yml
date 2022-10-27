@@ -18,12 +18,14 @@ tasks:
   ### PRODUCTION TASKS ###
   ########################
   train:
+    desc: "Run the production training pipeline"
     cmds:
       - task: codesearchnet:train
       - task: cosqa:train
       - task: predict
       - task: evaluate
   codesearchnet:train:
+    desc: "Run the production training on the CodeSearchNet dataset"
     deps: [ ":venv:create" ]
     cmds:
       - >
@@ -46,6 +48,7 @@ tasks:
         --output_dir {{.CODESEARCHNET_OUTPUT_DIR}}
         --encoder_name_or_path microsoft/codebert-base
   cosqa:train:
+    desc: "Run the production training on the CoSQA dataset"
     deps: [ ":venv:create" ]
     cmds:
       - >
@@ -68,6 +71,7 @@ tasks:
         --output_dir ./{{.COSQA_OUTPUT_DIR}}
         --encoder_name_or_path ./{{.CODESEARCHNET_OUTPUT_DIR}}
   predict:
+    desc: "Run the production training on the CoSQA dataset"
     deps: [ ":venv:create" ]
     cmds:
       - >
@@ -86,6 +90,7 @@ tasks:
   ### DEVELOPMENT TASKS ###
   #########################
   dev:train:
+    desc: "Run the development training pipeline"
     cmds:
       - task: dev:codesearchnet:train
       - task: dev:cosqa:train

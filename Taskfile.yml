@@ -4,13 +4,17 @@ vars:
   VENV: "{{.ROOT_DIR}}/venv"
   VENV_PYTHON: "{{.VENV}}/bin/python"
   VENV_PIP: "{{.VENV}}/bin/pip"
+  DOCKER_IMAGE_NAME: "codexglue-codesearch"
+  DOCKER_CONTAINER_NAME: "codexglue-codesearch"
 
 includes:
   data:
     dir: "data"
     taskfile: "data"
+    optional: true
   code:
     taskfile: "code"
+    optional: true
 
 tasks:
   venv:create:
@@ -21,7 +25,20 @@ tasks:
     status: ["test -d {{.VENV}}"]
   venv:install: "{{.VENV_PIP}} install -r requirements.txt"
   venv:clean: "rm -r {{.VENV}}"
+  # Project cleanup
   clean:
     deps:
-      - "code:clean"
-      - "data:clean"
+      - task: "code:clean"
+      - task: "data:clean"
+  clean-all:
+    deps:
+      - task: "clean"
+      - task: "data:clean:download-model"
+  # Docker
+  docker:build: ["docker compose build"]
+  docker:up: ["docker compose up -d"]
+  docker:exec: ["docker compose exec workspace {{.CLI_ARGS}}"]
+  docker:exec-gpu: ["docker compose -f docker-compose-gpu.yml exec workspace {{.CLI_ARGS}}"]
+  docker:extract: ["docker compose cp workspace:/project/{{.CLI_ARGS}} ."]
+  docker:stop: ["docker compose stop"]
+  docker:down: ["docker compose down"]
