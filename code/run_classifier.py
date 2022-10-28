@@ -17,36 +17,44 @@
 from __future__ import absolute_import, division, print_function
 
 import argparse
-import glob
 import logging
 import os
 import random
-
+from enum import Enum, unique
 
 import numpy as np
 import torch
-from torch.utils.data import DataLoader, SequentialSampler, RandomSampler, TensorDataset
+from torch.utils.data import DataLoader, SequentialSampler, RandomSampler
 from torch.utils.data.distributed import DistributedSampler
+
 try:
     from torch.utils.tensorboard import SummaryWriter
 except:
     from tensorboardX import SummaryWriter
 from tqdm import tqdm, trange
 
-from transformers import (WEIGHTS_NAME, get_linear_schedule_with_warmup, AdamW,
-                          RobertaConfig,
-                          RobertaModel,
-                          RobertaTokenizer)
+from transformers import get_linear_schedule_with_warmup, AdamW, RobertaConfig, RobertaModel, RobertaTokenizer
 
-from models import Model
+from models import ClassicModel, ModelAF, ModelFC, ModelCombined, ModelLoss, ModelAST
 from utils import acc_and_f1, TextDataset
 import multiprocessing
+
 cpu_cont = multiprocessing.cpu_count()
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 MODEL_CLASSES = {'roberta': (RobertaConfig, RobertaModel, RobertaTokenizer)}
+
+
+@unique
+class ModelType(Enum):
+    AST = 'ast'
+    FC = 'fc'
+    LOSS = 'loss'
+    COMBINED = 'combined'
+    AF = 'af'
+    DEFAULT = 'default'
 
 
 def set_seed(seed=42):
@@ -78,7 +86,7 @@ def train(args, train_dataset, model, tokenizer):
     if args.max_steps > 0:
         t_total = args.max_steps
         args.num_train_epochs = args.max_steps // (
-            len(train_dataloader) // args.gradient_accumulation_steps)
+                len(train_dataloader) // args.gradient_accumulation_steps)
         if args.num_train_epochs < 1:
             args.num_train_epochs = 1
     else:
@@ -135,11 +143,11 @@ def train(args, train_dataset, model, tokenizer):
     logger.info("  Gradient Accumulation steps = %d",
                 args.gradient_accumulation_steps)
     logger.info("  Total optimization steps = %d", t_total)
-
-    logger.info("torch.cuda.memory_allocated: %fGB" % (torch.cuda.memory_allocated(0) / 1024 / 1024 / 1024))
-    logger.info("torch.cuda.max_memory_allocated: %fGB" % (torch.cuda.max_memory_allocated(0) / 1024 / 1024 / 1024))
-    logger.info("torch.cuda.memory_cached: %fGB" % (torch.cuda.memory_cached(0) / 1024 / 1024 / 1024))
-    logger.info("torch.cuda.max_memory_cached: %fGB" % (torch.cuda.max_memory_cached(0) / 1024 / 1024 / 1024))
+    if args.n_gpu != 0:
+        logger.info("torch.cuda.memory_allocated: %fGB" % (torch.cuda.memory_allocated(0) / 1024 / 1024 / 1024))
+        logger.info("torch.cuda.max_memory_allocated: %fGB" % (torch.cuda.max_memory_allocated(0) / 1024 / 1024 / 1024))
+        logger.info("torch.cuda.memory_cached: %fGB" % (torch.cuda.memory_cached(0) / 1024 / 1024 / 1024))
+        logger.info("torch.cuda.max_memory_cached: %fGB" % (torch.cuda.max_memory_cached(0) / 1024 / 1024 / 1024))
 
     global_step = args.start_step
     tr_loss, logging_loss, avg_loss, tr_nb, tr_num, train_loss = 0.0, 0.0, 0.0, 0, 0, 0
@@ -187,9 +195,9 @@ def train(args, train_dataset, model, tokenizer):
             train_loss += loss.item()
             if avg_loss == 0:
                 avg_loss = tr_loss
-            avg_loss = round(train_loss/tr_num, 5)
+            avg_loss = round(train_loss / tr_num, 5)
             bar.set_description(
-                "epoch {} step {} loss {}".format(idx, step+1, avg_loss))
+                "epoch {} step {} loss {}".format(idx, step + 1, avg_loss))
 
             if (step + 1) % args.gradient_accumulation_steps == 0:
                 optimizer.step()
@@ -375,7 +383,21 @@ def test(args, model, tokenizer):
     logger.info("***** Running Test *****")
     with open(args.prediction_file, 'w') as f:
         for example, pred in zip(eval_dataset.examples, all_predictions.tolist()):
-            f.write(example.idx+'\t'+str(int(pred))+'\n')
+            f.write(example.idx + '\t' + str(int(pred)) + '\n')
+
+
+def get_model(model_type, model, config, tokenizer, args):
+    __lookup = {
+        'combined': ModelCombined,
+        'ast': ModelAST,
+        'fc': ModelFC,
+        'loss': ModelLoss,
+        'af': ModelAF,
+        'default': ClassicModel
+    }
+
+    local_model_type = __lookup.get(model_type, ClassicModel)
+    return local_model_type(model, config, tokenizer, args)
 
 
 def main():
@@ -395,6 +417,8 @@ def main():
     parser.add_argument("--test_file", default=None, type=str,
                         help="An optional input evaluation data file to evaluate the perplexity on (a text file).")
 
+    parser.add_argument("--model_variation", default="default", type=str,
+                        help="The variation of the model to be used for training.")
     parser.add_argument("--model_type", default="roberta", type=str,
                         help="The model architecture to be fine-tuned.")
     parser.add_argument("--pn_weight", type=float, default=1.0,
@@ -545,9 +569,10 @@ def main():
     config = config_class.from_pretrained(args.config_name if args.config_name else args.encoder_name_or_path,
                                           cache_dir=args.cache_dir if args.cache_dir else None)
     config.num_labels = 2
-    tokenizer = tokenizer_class.from_pretrained(args.tokenizer_name if args.tokenizer_name else args.encoder_name_or_path,
-                                                do_lower_case=args.do_lower_case,
-                                                cache_dir=args.cache_dir if args.cache_dir else None)
+    tokenizer = tokenizer_class.from_pretrained(
+        args.tokenizer_name if args.tokenizer_name else args.encoder_name_or_path,
+        do_lower_case=args.do_lower_case,
+        cache_dir=args.cache_dir if args.cache_dir else None)
     if args.max_seq_length <= 0:
         # Our input block size will be the max possible for the model
         args.max_seq_length = tokenizer.max_len_single_sentence
@@ -562,7 +587,7 @@ def main():
     else:
         model = model_class(config)
 
-    model = Model(model, config, tokenizer, args)
+    model = get_model(args.model_variation, model, config, tokenizer, args)
 
     if args.checkpoint_path:
         model.load_state_dict(torch.load(os.path.join(
