@@ -1,7 +1,7 @@
 version: 3
 
 vars:
-  VENV: "{{.ROOT_DIR}}/venv"
+  VENV: "venv"
   VENV_PYTHON: "{{.VENV}}/bin/python"
   VENV_PIP: "{{.VENV}}/bin/pip"
 

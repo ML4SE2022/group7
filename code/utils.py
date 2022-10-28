@@ -79,7 +79,6 @@ class TextDataset(Dataset):
         self.type = type
 
         logger.info(f"Loading data from {file_path}")
-
         data=[]
         with open(file_path, 'r') as f:
             data = json.load(f)
