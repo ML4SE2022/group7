@@ -1,8 +1,8 @@
 # CodeXGLUE - Code Search (WebQueryTest)
 
-The modified project for testing relevance of the source code and natural language description 
+The modified project for testing the relevance of the source code and natural language description 
 from [CodeXGLUE](https://github.com/microsoft/CodeXGLUE) competition.
-Original code available in the separate [GitHub repository](https://github.com/microsoft/CodeXGLUE/tree/main/Text-Code/NL-code-search-WebQuery). 
+The original code is available in a separate [GitHub repository](https://github.com/microsoft/CodeXGLUE/tree/main/Text-Code/NL-code-search-WebQuery). 
 
 ## Prerequisites
 
@@ -30,7 +30,7 @@ Make sure that the Docker daemon is running and build the Docker image with:
 ```bash
 task docker:build
 ```
-This step has to be reexecuted whenever changes are made to the source code.
+This step has to be re-executed whenever changes are made to the source code.
 
 Start the container with:
 ```bash
@@ -46,19 +46,19 @@ task docker:exec -- task code:train
 task docker:exec-gpu -- task code:train
 ```
 
-To display the tasks, relevant to the training, execute:
+To display the tasks relevant to the training, execute the following:
 ```bash
 task docker:exec-gpu -- task -l
 ```
 
-To execute the `code:train` production training task, execute:
+To execute the `code:train` production training task, execute the following:
 ```bash
 task docker:exec -- code:train
 ```
 
 #### Executing commands manually from within the container
 
-In order to enter the container's shell and execute commands, run:
+In order to enter the container's shell and execute commands, run the following:
 ```bash
 # Without access to GPU
 task docker:run -- bash
@@ -79,26 +79,26 @@ task docker:extract -- model_cosqa_continue_training
 
 #### Stopping and removing the container
 
-To stop the container without removing data, execute:
+To stop the container without removing data, execute the following:
 ```bash
 task docker:stop
 ```
 
-To remove the container and all its data (like the trained models), execute:
+To remove the container and all its data (like the trained models), execute the following:
 ```bash
 task docker:down
 ```
 
 ### Without Docker
 
-Make sure that you are running Python 3.7 (check with `python -V`).
+Ensure that you are running Python 3.7 (check with `python -V`).
 
-To display the tasks, relevant to the training, execute:
+To display the tasks relevant to the training, execute the following:
 ```bash
 task -l
 ```
 
-To display all the tasks (including intermediate ones, like data processing or virtual environment creation), execute:
+To display all the tasks (including intermediate ones, like data processing or virtual environment creation), execute the following:
 ```bash
 task --list-all
 ```
@@ -109,11 +109,11 @@ task code:train
 ```
 
 The virtual environment will be created automatically.
-The dataset will be also downloaded and preprocessed.
+The dataset will also be downloaded and preprocessed.
 
 ## Dataset
 
-We are using CoSQA dataset, available in the repository, as well as CodeSearchNet dataset,
+We are using the CoSQA dataset, available in the repository, as well as the CodeSearchNet dataset,
 which can be downloaded from either:
 * executing task `task data:download-model`
 * directly: https://s3.amazonaws.com/code-search-net/CodeSearchNet/v2/python.zip
