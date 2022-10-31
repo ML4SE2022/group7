@@ -1,4 +1,130 @@
-# CodeXGLUE -- Code Search (WebQueryTest)
+# CodeXGLUE - Code Search (WebQueryTest)
+
+The modified project for testing the relevance of the source code and natural language description 
+from [CodeXGLUE](https://github.com/microsoft/CodeXGLUE) competition.
+The original code is available in a separate [GitHub repository](https://github.com/microsoft/CodeXGLUE/tree/main/Text-Code/NL-code-search-WebQuery). 
+
+## Prerequisites
+
+### Running with Docker
+
+* [Task](https://taskfile.dev) (tested with v3.15.2)
+* Docker 20.10 (tested with 20.10.19) with Compose and BuildKit installed
+  * Compose and BuildKit are included by default in the latest versions of Docker
+
+### Running locally
+
+* Linux or Windows machine with WSL
+  * Not tested on macOS
+* Python 3.7
+  * [pyenv](https://github.com/pyenv/pyenv) can be used to install legacy versions of Python
+* [Task](https://taskfile.dev) (tested with v3.15.2)
+* (Optional) CUDA toolkit and Nvidia graphics card/accelerator
+  * In case no CUDA acceleration is available, PyTorch will default to CPU
+
+## Launching the learning pipeline
+
+### With Docker
+
+Make sure that the Docker daemon is running and build the Docker image with:
+```bash
+task docker:build
+```
+This step has to be re-executed whenever changes are made to the source code.
+
+Start the container with:
+```bash
+task docker:up
+```
+It will sleep in the background and wait for the commands to be executed with `docker:exec`,
+so that its local data are available for extraction with `docker:extract`.
+Wxecute arbitrary task by passing its name after `--`:
+```bash
+# Without access to GPU
+task docker:exec -- task code:train
+# With access to GPU
+task docker:exec-gpu -- task code:train
+```
+
+To display the tasks relevant to the training, execute the following:
+```bash
+task docker:exec-gpu -- task -l
+```
+
+To execute the `code:train` production training task, execute the following:
+```bash
+task docker:exec -- code:train
+```
+
+#### Executing commands manually from within the container
+
+In order to enter the container's shell and execute commands, run the following:
+```bash
+# Without access to GPU
+task docker:run -- bash
+# With access to GPU
+task docker:run-gpu -- bash
+```
+
+#### Copying data from within the container
+
+The data in the container are not persisted when the container is rebuilt.
+In order to extract it from the container, use the `docker:extract` task.
+For example, to extract the trained production models after running `task docker:train`
+
+```bash
+task docker:extract -- model_codesearchnet
+task docker:extract -- model_cosqa_continue_training
+```
+
+#### Stopping and removing the container
+
+To stop the container without removing data, execute the following:
+```bash
+task docker:stop
+```
+
+To remove the container and all its data (like the trained models), execute the following:
+```bash
+task docker:down
+```
+
+### Without Docker
+
+Ensure that you are running Python 3.7 (check with `python -V`).
+
+To display the tasks relevant to the training, execute the following:
+```bash
+task -l
+```
+
+To display all the tasks (including intermediate ones, like data processing or virtual environment creation), execute the following:
+```bash
+task --list-all
+```
+
+For instance, to run the production training pipeline, call: 
+```bash
+task code:train
+```
+
+The virtual environment will be created automatically.
+The dataset will also be downloaded and preprocessed.
+
+## Dataset
+
+We are using the CoSQA dataset, available in the repository, as well as the CodeSearchNet dataset,
+which can be downloaded from either:
+* executing task `task data:download-model`
+* directly: https://s3.amazonaws.com/code-search-net/CodeSearchNet/v2/python.zip
+
+## Expected results
+
+TODO
+
+------------------------------------------------------------------------------------------------------------------------
+
+# Original README
 
 **Update 2021.07.30:** We add CoSQA into CodeXGLUE, and recommend you to use this dataset as the training and development set of CodeXGLUE -- Code Search (WebQueryTest) Challenge. The dataset can be found in `./cosqa`. For more details about the dataset collection and usage, please refer to the [ACL 2021 paper](https://arxiv.org/abs/2105.13239) and the [GitHub repo](https://github.com/Jun-jie-Huang/CoCLR). 
 

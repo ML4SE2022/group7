@@ -1,0 +1,21 @@
+services:
+  workspace:
+    build: .
+    image: codexglue-codesearch
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+              count: all
+    volumes:
+      - "model-codesearchnet:/project/model_codesearchnet"
+      - "model-cosqa:/project/model_cosqa_continue_training"
+      - "dev-model-codesearchnet:/project/dev_model_codesearchnet"
+      - "dev-model-cosqa:/project/dev_model_cosqa_continue_training"
+
+volumes:
+  model-codesearchnet: {}
+  model-cosqa: {}
+  dev-model-codesearchnet: {}
+  dev-model-cosqa: {}
