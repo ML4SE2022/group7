@@ -22,6 +22,16 @@ The original code is available in a separate [GitHub repository](https://github.
 * (Optional) CUDA toolkit and Nvidia graphics card/accelerator
   * In case no CUDA acceleration is available, PyTorch will default to CPU
 
+### Evaluating a pre-trained model
+* [gdown](https://pypi.org/project/gdown) can be used to download the best performing model of ours to perform evaluations on it.
+```bash
+pip install gdown
+gdown https://drive.google.com/uc\?id\=1QSwfPHi83P0-fFaSdTsPhelp3l7V1f9S
+unzip best_model.zip -d model_cosqa_continue_training
+```
+* If you do not want to use `gdown`, you can simply download the zip file via [this](https://drive.google.com/file/d/1QSwfPHi83P0-fFaSdTsPhelp3l7V1f9S/view?usp=share_link) link.
+* **IMPORTANT:** predicting on this model will require a CUDA capable device, as it was trained on a CUDA-capable device.
+
 ## Launching the learning pipeline
 
 ### With Docker
