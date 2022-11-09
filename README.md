@@ -130,7 +130,16 @@ which can be downloaded from either:
 
 ## Expected results
 
-TODO
+| Model configuration            | Precision | Recall | F1-score | Accuracy |
+|--------------------------------|-----------|--------|----------|----------|
+| Baseline model                 | 51%       | 100%   | 0.68     | 51%      |
+| Model with deeper FC           | 55%       | 1%     | 0.02     | 48%      |
+| Model with new loss func       | 61%       | 2%     | 0.04     | 48%      |
+| Model with new AF              | 52%       | 100%   | 0.68     | 52%      |
+| Model with AST                 | 56%       | 14%    | 0.22     | 49%      |
+| Model with everything combined | 0%        | 0%     | 0.00     | 48%      |
+
+It is important to mention that we obtained these results by fine-tuning the original codebert model on the CoSQA dataset. We achieved this by fine-tuning (training) on only one-tenth of the dataset, as training on more than that would have been unfeasible.
 
 ------------------------------------------------------------------------------------------------------------------------
 
